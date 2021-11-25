@@ -10,7 +10,7 @@ import java.util.Arrays;
 public class MovingTableResource {
     private char[][] sushiBar = new char[10][36];
     private char[] foodLine = new char[18];
-    private static final char FOOD = '★';
+    private static final char FOOD = '1';
     private static final char EMPTY = '_';
 
     public MovingTableResource() {
@@ -23,7 +23,7 @@ public class MovingTableResource {
         updateFoodLine();
     }
 
-    private void updateFoodLine() {
+    private synchronized void updateFoodLine() {
         int foodLineIndexCounter = 0;
         for (int i = 7; i < 29; i = i + 4) {
             sushiBar[1][i] = foodLine[foodLineIndexCounter];
@@ -44,6 +44,7 @@ public class MovingTableResource {
             sushiBar[i][4] = foodLine[foodLineIndexCounter];
             foodLineIndexCounter++;
         }
+
 
     }
 
@@ -76,7 +77,7 @@ public class MovingTableResource {
             sushiBar[i][35] = Character.forDigit(customerCounter, 10);
             customerCounter++;
         }
-        customerCounter -= 9;
+        customerCounter = 0;
         for (int i = 27; i > 6; i = i - 4) {
             sushiBar[9][i] = 'm';
             sushiBar[9][i + 1] = '1';
@@ -110,7 +111,7 @@ public class MovingTableResource {
         sushiBar[7][28] = '3';
     }
 
-    public void addPlate(int cookerIndex) throws Exception {
+    public synchronized void addPlate(int cookerIndex) throws Exception {
         if (cookerIndex > 4 || cookerIndex < 1)
             throw new Exception("Cooker index out of bound when adding plate!");
         if (cookerIndex == 1) {
@@ -138,7 +139,7 @@ public class MovingTableResource {
         updateFoodLine();
     }
 
-    public void moveLine() {
+    public synchronized void moveLine() {
         char[] tempFoodLine = new char[18];
         for (int i = 0; i < tempFoodLine.length; i++) {
             if (i == 17) {
@@ -151,12 +152,19 @@ public class MovingTableResource {
         updateFoodLine();
     }
 
-    public void display() {
+    public synchronized void display() {
         for (int i = 0; i < 10; i++) {
             for (int j = 0; j < 36; j++) {
                 System.out.print(sushiBar[i][j]);
             }
             System.out.print('\n');
         }
+    }
+
+    public void takePlate(int customerSeat) throws Exception {
+        if(customerSeat>18 || customerSeat<1)
+            throw new Exception("index out of bounds");
+        if (foodLine[customerSeat-1] == FOOD)
+            foodLine[customerSeat-1] = EMPTY;
     }
 }
