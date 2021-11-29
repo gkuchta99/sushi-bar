@@ -5,6 +5,9 @@ import lombok.Setter;
 import lombok.SneakyThrows;
 import org.sushibar.resources.MovingTableResource;
 
+import static org.sushibar.resources.MovingTableResource.EMPTY;
+import static org.sushibar.resources.MovingTableResource.FOOD;
+
 
 @Setter
 @Getter
@@ -23,8 +26,17 @@ public class CustomerThread implements Runnable {
     @Override
     public void run() {
         while (true) {
-            tableResource.takePlate(spot);
+            takePlate(spot);
             Thread.sleep(8000);
+        }
+    }
+
+    private void takePlate(int customerSeat) throws Exception {
+        if (customerSeat > 18 || customerSeat < 1)
+            throw new Exception("index out of bounds");
+        if (tableResource.getFoodLine()[customerSeat - 1] == FOOD) {
+            tableResource.setFoodLineElement(customerSeat - 1, EMPTY);
+            tableResource.updateFoodLine();
         }
     }
 }

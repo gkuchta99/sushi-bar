@@ -10,8 +10,8 @@ import java.util.Arrays;
 public class MovingTableResource {
     private char[][] sushiBar = new char[10][36];
     private char[] foodLine = new char[18];
-    private static final char FOOD = '1';
-    private static final char EMPTY = '_';
+    public static final char FOOD = '1';
+    public static final char EMPTY = '_';
 
     public MovingTableResource() {
         Arrays.fill(foodLine, EMPTY);
@@ -23,7 +23,11 @@ public class MovingTableResource {
         updateFoodLine();
     }
 
-    private synchronized void updateFoodLine() {
+    public synchronized void setFoodLineElement(int index, char value) {
+        this.foodLine[index] = value;
+    }
+
+    public synchronized void updateFoodLine() {
         int foodLineIndexCounter = 0;
         for (int i = 7; i < 29; i = i + 4) {
             sushiBar[1][i] = foodLine[foodLineIndexCounter];
@@ -111,33 +115,6 @@ public class MovingTableResource {
         sushiBar[7][28] = '3';
     }
 
-    public synchronized void addPlate(int cookerIndex) throws Exception {
-        if (cookerIndex > 4 || cookerIndex < 1)
-            throw new Exception("Cooker index out of bound when adding plate!");
-        if (cookerIndex == 1) {
-            if (foodLine[0] == EMPTY)
-                foodLine[0] = FOOD;
-            else if (foodLine[17] == EMPTY)
-                foodLine[17] = FOOD;
-        } else if (cookerIndex == 2) {
-            if (foodLine[5] == EMPTY)
-                foodLine[5] = FOOD;
-            else if (foodLine[6] == EMPTY)
-                foodLine[6] = FOOD;
-        } else if (cookerIndex == 3) {
-            if (foodLine[8] == EMPTY)
-                foodLine[8] = FOOD;
-            else if (foodLine[9] == EMPTY)
-                foodLine[9] = FOOD;
-        } else {
-            if (foodLine[14] == EMPTY) {
-                foodLine[14] = FOOD;
-            } else if (foodLine[15] == EMPTY) {
-                foodLine[15] = FOOD;
-            }
-        }
-        updateFoodLine();
-    }
 
     public synchronized void moveLine() {
         char[] tempFoodLine = new char[18];
@@ -152,19 +129,4 @@ public class MovingTableResource {
         updateFoodLine();
     }
 
-    public synchronized void display() {
-        for (int i = 0; i < 10; i++) {
-            for (int j = 0; j < 36; j++) {
-                System.out.print(sushiBar[i][j]);
-            }
-            System.out.print('\n');
-        }
-    }
-
-    public void takePlate(int customerSeat) throws Exception {
-        if(customerSeat>18 || customerSeat<1)
-            throw new Exception("index out of bounds");
-        if (foodLine[customerSeat-1] == FOOD)
-            foodLine[customerSeat-1] = EMPTY;
-    }
 }
